@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Product.Application.Dtos;
 using Product.Application.Services;
 using Product.Domain.Entities;
 
@@ -32,11 +33,11 @@ namespace Product.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddProduct(ProductEntity product)
+        public async Task<IActionResult> AddProduct(ProductDto product)
         {
             await _service.AddProductAsync(product);
 
-            return CreatedAtAction(nameof(GetProductById), new { id = product.Id }, product);
+            return Ok(product);
         }
 
         [HttpPut]

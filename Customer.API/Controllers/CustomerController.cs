@@ -1,4 +1,5 @@
-﻿using Customer.Application.Services;
+﻿using Customer.Application.Dtos;
+using Customer.Application.Services;
 using Customer.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,11 +33,11 @@ namespace Customer.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddCustomer(CustomerEntity customer)
+        public async Task<IActionResult> AddCustomer(CustomerDto customer)
         {
             await _service.AddCustomerAsync(customer);
 
-            return CreatedAtAction(nameof(GetCustomerById), new { id = customer.Id }, customer);
+            return Ok(customer);
         }
 
         [HttpPut]

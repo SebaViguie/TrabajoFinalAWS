@@ -1,9 +1,10 @@
-using Customer.Application.Profiles;
-using Customer.Application.Services;
-using Customer.Domain.Repositories;
-using Customer.Infraestructure.Data;
-using Customer.Infraestructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Order.Application.Services.Customer;
+using Order.Application.Services.Order;
+using Order.Application.Services.Product;
+using Order.Domain.Repositories;
+using Order.Infraestructure.Data;
+using Order.Infraestructure.OrderRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,12 +15,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
-builder.Services.AddDbContext<CustomerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddAutoMapper(typeof(CustomerProfile));
+builder.Services.AddDbContext<OrderDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
