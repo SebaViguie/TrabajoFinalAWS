@@ -4,6 +4,10 @@ using Product.Domain.Repositories;
 using Product.Infraestructure.Repositories;
 using Product.Infraestructure.Data;
 using Product.Application.Profiles;
+using Serilog;
+using Product.API.Middleware;
+using FluentValidation;
+using Product.Domain.Validations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +20,20 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddValidatorsFromAssemblyContaining<ProductValidator>();
 
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+var loggingConfig = new LoggerConfiguration()
+    .WriteTo.File("logs/serilog.txt",
+                    rollingInterval: RollingInterval.Day)
+    .MinimumLevel.Information()
+    .CreateLogger();
+
 builder.Services.AddAutoMapper(typeof(ProductProfile));
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(loggingConfig);
 
 var app = builder.Build();
 
@@ -30,6 +43,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
