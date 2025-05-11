@@ -1,0 +1,87 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject ICustomerService CustomerService;
+@inject IOrderService OrderService;
+@using ClientApp.Dtos;
+@using ClientApp.Services.Customer;
+@using ClientApp.Services;
+@using ClientApp.Services.Order;
+
+<PageTitle>Clientes</PageTitle>
+
+<h1>Crear cliente</h1>
+
+<EditForm Model="customerDto" OnValidSubmit="AddCustomer" FormName="customerForm">
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nombre</label>
+            <InputText class="form-control" id="name" @bind-Value="customerDto.Name" />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText class="form-control" id="email" @bind-Value="customerDto.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label for="address" class="form-label">Dirección</label>
+            <InputText class="form-control" id="address" @bind-Value="customerDto.Address" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</EditForm>
+
+<h1 class="mt-5">Consultar ordenes</h1>
+
+<div class="col-md-3">
+    <div class="mb-3">
+        <label for="customerId" class="form-label">Id de cliente</label>
+        <input type="number" name="customerId" @bind="customerId" />
+        <button class="btn btn-primary" @onclick="GetOrders">Consultar</button>
+    </div>
+</div>
+
+@if (orders != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.CustomerName</td>
+                    <td>@order.OrderDate</td>
+                    <td>@order.OrderItems</td>
+                    <td>@order.TotalAmount</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code{
+    public CustomerDto customerDto = new CustomerDto();
+    public int customerId;
+    public CustomerOrderDto[]? orders;
+
+    public async Task AddCustomer() 
+    {
+        await CustomerService.AddCustomerAsync(customerDto);
+    }
+
+    public async Task GetOrders()
+    {
+        var result = await OrderService.GetOrdersAsync(customerId);
+
+        orders = result.ToArray();
+    }
+}

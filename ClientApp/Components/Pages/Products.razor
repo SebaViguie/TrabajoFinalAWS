@@ -1,0 +1,50 @@
+﻿@page "/products"
+@attribute [StreamRendering]
+@inject IProductService ProductService;
+@using ClientApp.Dtos;
+@using ClientApp.Services;
+@using ClientApp.Services.Product
+
+<PageTitle>Products</PageTitle>
+
+<h1>Products</h1>
+
+@if (products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in products)
+            {
+                <tr>
+                    <td>@product.Name</td>
+                    <td>@product.Description</td>
+                    <td>@product.Price</td>
+                    <td>@product.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private ProductDto[]? products;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var response = await ProductService.GetProductsAsync();
+
+        products = response.ToArray();
+    }
+}
