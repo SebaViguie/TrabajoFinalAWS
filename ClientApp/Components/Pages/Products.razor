@@ -1,9 +1,12 @@
 ﻿@page "/products"
 @attribute [StreamRendering]
+@rendermode InteractiveServer
 @inject IProductService ProductService;
+@inject IOrderService OrderService;
 @using ClientApp.Dtos;
 @using ClientApp.Services;
-@using ClientApp.Services.Product
+@using ClientApp.Services.Product;
+@using ClientApp.Services.Order;
 
 <PageTitle>Products</PageTitle>
 
@@ -22,6 +25,7 @@ else
                 <th>Descripción</th>
                 <th>Precio</th>
                 <th>Stock</th>
+                <th>Cantidad a comprar</th>
             </tr>
         </thead>
         <tbody>
@@ -30,21 +34,52 @@ else
                 <tr>
                     <td>@product.Name</td>
                     <td>@product.Description</td>
-                    <td>@product.Price</td>
+                    <td>$@product.Price</td>
                     <td>@product.Stock</td>
+                    <td>@product.Counter</td>
+                    <td><button class="btn btn-primary" @onclick="product.IncrementCounter">Agregar</button></td>
                 </tr>
             }
         </tbody>
     </table>
 }
 
+<div class="col-md-3">
+    <div class="mb-3">
+        <label for="customerId" class="form-label">Id de cliente para comprar</label>
+        <input type="number" name="customerId" @bind="customerId" />
+        <button class="btn btn-primary" @onclick="AddOrder">Comprar</button>
+    </div>
+</div>
+
 @code {
     private ProductDto[]? products;
+    private int customerId;
 
     protected override async Task OnInitializedAsync()
     {
         var response = await ProductService.GetProductsAsync();
 
         products = response.ToArray();
+    }
+
+    private async Task AddOrder()
+    {
+        var order = new OrderDto
+            {
+                CustomerId = customerId,
+                OrderItems = products.Where(p => p.Counter > 0).Select(p => new OrderListItemDto
+                {
+                    ProductId = p.Id,
+                    Quantity = p.Counter
+                }).ToList()
+            };
+
+        await OrderService.AddOrderAsync(order);
+
+        foreach (var product in products)
+        {
+            product.Counter = 0;
+        }
     }
 }

@@ -28,13 +28,11 @@ namespace Product.Application.Services
             return result;
         }
 
-        public async Task<List<ProductDto>> GetAllProductsAsync()
+        public async Task<List<ProductEntity>> GetAllProductsAsync()
         {
             var products = await _repository.GetAllProductsAsync();
 
-            var result = _mapper.Map<List<ProductDto>>(products);
-
-            return result;
+            return products;
         }
 
         public async Task AddProductAsync(ProductDto product)

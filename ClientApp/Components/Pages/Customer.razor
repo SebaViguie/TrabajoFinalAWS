@@ -48,8 +48,7 @@
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Precio</th>
+                <th>Fecha de orden</th>
                 <th>Total</th>
             </tr>
         </thead>
@@ -59,8 +58,7 @@
                 <tr>
                     <td>@order.CustomerName</td>
                     <td>@order.OrderDate</td>
-                    <td>@order.OrderItems</td>
-                    <td>@order.TotalAmount</td>
+                    <td>$@order.TotalAmount</td>
                 </tr>
             }
         </tbody>

@@ -1,5 +1,4 @@
 ﻿using ClientApp.Dtos;
-using System.Text.Json;
 
 namespace ClientApp.Services.Order
 {
@@ -17,6 +16,11 @@ namespace ClientApp.Services.Order
             var response = await _client.GetFromJsonAsync<List<CustomerOrderDto>>($"order/{customerId}");
 
             return response;
+        }
+
+        public async Task AddOrderAsync(OrderDto orderDto)
+        {
+            await _client.PostAsJsonAsync("order", orderDto);
         }
     }
 }
